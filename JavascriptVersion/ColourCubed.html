@@ -3,12 +3,40 @@
 	<head>
 		<title>Colour&sup3;</title>
 		<style>canvas { width: 100%; height: 100% }</style>
-		<!--link rel="icon" type="image/png" href="favicon.png"-->
+        <!--link rel="icon" type="image/png" href="favicon.png"-->
+        <style>
+            *{
+                overflow:hidden;
+                background-color: black;
+                color:whitesmoke;
+            }
+            #controls {
+                width: 15vw;
+                margin-top: .1%;
+                display: inline;
+                color:whitesmoke;
+            }
+            cube {
+                margin:auto;
+            }
+        </style>
+        <script src="js/three.js"></script>
+        <script src="js/OrbitControls.js"></script>
 	</head>
 	
 	<body>
-        <script src="js/three.js"></script>
+        <button id="controls" onclick='updateCubeNum(cubeLineNum+1)'>Increase Cube Count</button>
+        <button id="controls" onclick="updateCubeNum(cubeLineNum-1)">Decrease Cube Count</button>
+        <button id="controls" onclick="updateCubeSize(cubeSize+.05)">Increase Cube Size</button>
+        <button id="controls" onclick="updateCubeSize(cubeSize-.05)">Decrease Cube Size</button>
+
+        <button id="controls" onclick="controls.autoRotate = !controls.autoRotate">[En|Dis]able autoRotate</button>
+        <cube></cube>
         <script src="js/ColourCubed.js"></script>
-		<script>render();</script>
+        <script>
+            //Sets up the scene
+            settingsUpdated();
+            render();
+        </script>
 	</body>
 </html>
