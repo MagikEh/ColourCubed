@@ -19,6 +19,12 @@
             cube {
                 margin:auto;
             }
+            button:hover {
+                background-color: darkgray;
+            }
+            button:active {
+                background-color:gray;
+            }
         </style>
         <script src="js/three.js"></script>
         <script src="js/OrbitControls.js"></script>
@@ -26,10 +32,11 @@
 	
 	<body>
         Use the left mouse button and drag to rotate, scroll to zoom.<br />
+        Total Cubes:<werd id="cubeCount"></werd>    CubeSize:<werd id="cubeSize"></werd><br />
         <button id="controls" onclick='updateCubeNum(cubeLineNum+1)'>Increase Cube Count</button>
         <button id="controls" onclick="updateCubeNum(cubeLineNum-1)">Decrease Cube Count</button>
-        <button id="controls" onclick="updateCubeSize(cubeSize+.05)">Increase Cube Size</button>
-        <button id="controls" onclick="updateCubeSize(cubeSize-.05)">Decrease Cube Size</button>
+        <button id="controls" onclick="updateCubeScale(cubeScale+.1)">Increase Cube Size</button>
+        <button id="controls" onclick="updateCubeScale(cubeScale-.1)">Decrease Cube Size</button>
 
         <button id="controls" onclick="controls.autoRotate = !controls.autoRotate">[En|Dis]able autoRotate</button>
         <cube></cube>
