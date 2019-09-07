@@ -7,7 +7,7 @@ document.getElementsByTagName("cube")[0].appendChild(renderer.domElement);
 
 var scene = new THREE.Scene();
 //cubeLineNum^3 = total number of cubes
-var cubeLineNum = 64;
+var cubeLineNum = 32;
 var cubeSize = 1;
 var cubeScale = .2;
 
