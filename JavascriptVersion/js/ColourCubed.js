@@ -7,10 +7,9 @@ document.getElementsByTagName("cube")[0].appendChild(renderer.domElement);
 
 var scene = new THREE.Scene();
 //cubeLineNum^3 = total number of cubes
-var cubeLineNum = 8;
-var cubesPool = [];
+var cubeLineNum = 255;
 var cubeSize = 1;
-var cubeScale = 1;
+var cubeScale = .2;
 
 //(Fov, AspectRatio, FrustumNearPlane, FrustumFarPlane)
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, .01, 1000);
@@ -37,6 +36,7 @@ function updateCubeNum(newCubeLineNum) {
     settingsUpdated();
 }
 
+//TODO: This is broke AF yo..
 function updateCubeScale(newCubeScale) {
     //Need to wipe the insignificant lower bound out
     newCubeScale = Math.floor(newCubeScale*100);
@@ -65,36 +65,81 @@ function updateCubeScale(newCubeScale) {
 
 function settingsUpdated() {
     scene = new THREE.Scene();
-    makeCubes();
-}
-
-function makeCubes() {
-    var requiredCubes = cubesPool.length - Math.pow(cubeLineNum,3);
-    if(requiredCubes < 0) {
-        for(i=requiredCubes; i<1; i++)
-        cubesPool.push(new THREE.Mesh(
-            new THREE.CubeGeometry(cubeSize, cubeSize, cubeSize),
-            new THREE.MeshBasicMaterial({color: 0xfff})));
-    }
-    var i = 0;
-    var cube;
-    for(x = 0; x < cubeLineNum; x++)
-        for(y = 0; y < cubeLineNum; y++)
-            for(z = 0; z < cubeLineNum; z++) {
-                //TODO: Update the cubeGeometry to a bufferGeometry for better frames: https://threejs.org/docs/#api/en/core/BufferGeometry
-                //TODO HERE WE PULL CUBES FROM THE POOL AND UPDATE THE COLOUR AND POSITIONING OF EACH. THAT'S ALL, ASSUME SIZE IS SET.
-                cube = cubesPool[i++];
-                cube.scale.set(cubeScale, cubeScale, cubeScale);
-                cube.position.set(cubeLineNum/(-2)+x,
-                                  cubeLineNum/(-2)+y,
-                                  cubeLineNum/(-2)+z);
-                cube.material.color = new THREE.Color("rgb(" + Math.floor(x/cubeLineNum*255) + ", " + Math.floor(y/cubeLineNum*255) + ", " + Math.floor(z/cubeLineNum*255) + ")");;
-                scene.add(cube);
-            }
+    makeBufferedCubes();
     document.getElementById("cubeCount").innerHTML = Math.pow(cubeLineNum,3);
     document.getElementById("cubeSize").innerHTML = cubeScale;
-    
 }
+
+function makeBufferedCubes() {
+    var bufferGeometry = new THREE.BufferGeometry();
+    var totalCubes = Math.pow(cubeLineNum, 3);
+
+    var positions = [];
+    var colors = [];
+
+    var color = new THREE.Color( 0xffffff );
+    var cubeGeo = new THREE.CubeGeometry(cubeScale, cubeScale, cubeScale);
+    var geometry = new THREE.Geometry();
+    var x = 0;
+    var y = 0;
+    var z = 0;
+    //Find the bottom corner of the box that we want to draw in all dimensions.
+    //(Makes them sit around the origin more centered like)
+    var cubeLinePos = cubeLineNum/(-2);
+
+    for ( var i = 1; i <= totalCubes; i ++ ) {
+
+        geometry.copy( cubeGeo );
+        //geometry.scale(cubeScale, cubeScale, cubeScale);
+        geometry.translate( cubeLinePos + x, cubeLinePos + y, cubeLinePos + z );
+
+        color.setRGB( x/cubeLineNum, y/cubeLineNum, z/cubeLineNum );
+        
+        geometry.faces.forEach( function ( face ) {
+
+            positions.push( geometry.vertices[ face.a ].x,
+                            geometry.vertices[ face.a ].y,
+                            geometry.vertices[ face.a ].z,
+                            geometry.vertices[ face.b ].x,
+                            geometry.vertices[ face.b ].y,
+                            geometry.vertices[ face.b ].z,
+                            geometry.vertices[ face.c ].x,
+                            geometry.vertices[ face.c ].y,
+                            geometry.vertices[ face.c ].z );
+
+            colors.push( color.r,
+                         color.g,
+                         color.b,
+                         color.r,
+                         color.g,
+                         color.b,
+                         color.r,
+                         color.g,
+                         color.b );
+
+        } );
+        x++;
+        if(x == cubeLineNum) {
+            x = 0;
+            y++;
+            if(y == cubeLineNum) {
+                y=0;
+                z++;
+                if(z == cubeLineNum) {
+                    z = 0
+                }
+            }
+        }
+
+    }
+    bufferGeometry.computeBoundingBox();
+    bufferGeometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+    bufferGeometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+    var material = new THREE.PointsMaterial( { vertexColors: THREE.VertexColors } );
+    scene.add( new THREE.Mesh( bufferGeometry, material ) );
+
+}
+
 
 var render = function () {
     requestAnimationFrame(render);
