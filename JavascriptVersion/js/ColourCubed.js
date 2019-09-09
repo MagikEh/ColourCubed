@@ -2,20 +2,20 @@
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-//document.body.appendChild(renderer.domElement);
-document.getElementsByTagName("cube")[0].appendChild(renderer.domElement);
+var sceneContainer = document.getElementById('cube');
+sceneContainer.appendChild(renderer.domElement);
 
 var scene = new THREE.Scene();
 //cubeLineNum^3 = total number of cubes
-var cubeLineNum = 32;
-var cubeSize = 1;
-var cubeScale = .2;
+var cubeLineNum = document.getElementById('cubeCount').value;
+var cubeSize = document.getElementById('cubeSize').innerText;
+var cubeScale = 1;
 
 //(Fov, AspectRatio, FrustumNearPlane, FrustumFarPlane)
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, .01, 1000);
 camera.position.z = cubeLineNum * 2;
 
-var controls = new THREE.OrbitControls(camera);
+var controls = new THREE.OrbitControls(camera, sceneContainer);
 controls.autoRotate = true;
 controls.enableKeys = true;
 controls.enablePan = false;
@@ -38,22 +38,8 @@ function updateCubeNum(newCubeLineNum) {
 
 //TODO: This is broke AF yo..
 function updateCubeScale(newCubeScale) {
-    //Need to wipe the insignificant lower bound out
-    newCubeScale = Math.floor(newCubeScale*100);
-    newCubeScale -= newCubeScale%10;
-    newCubeScale = newCubeScale/100;
-    if(newCubeScale < .01)
-        newCubeScale = .01
-    if(newCubeScale > 1)
-        newCubeScale = 1;
-    console.log(cubeScale + " -> " + newCubeScale);
-    if(newCubeScale != cubeScale)
-        for(i=0; i < scene.children.length; i++) {
-            scene.children[i].scale.set(cubeScale, cubeScale, cubeScale);
-            scene.children[i].updateMatrix();
-        }
     cubeScale = newCubeScale;
-    document.getElementById("cubeSize").innerHTML = cubeScale;
+    settingsUpdated();
 }
 
 /**
@@ -67,7 +53,6 @@ function settingsUpdated() {
     scene = new THREE.Scene();
     makeBufferedCubes();
     document.getElementById("cubeCount").innerHTML = Math.pow(cubeLineNum,3);
-    document.getElementById("cubeSize").innerHTML = cubeScale;
 }
 
 function makeBufferedCubes() {
@@ -80,6 +65,7 @@ function makeBufferedCubes() {
     var color = new THREE.Color( 0xffffff );
     var cubeGeo = new THREE.CubeGeometry(cubeScale, cubeScale, cubeScale);
     var geometry = new THREE.Geometry();
+
     var x = 0;
     var y = 0;
     var z = 0;
@@ -130,16 +116,13 @@ function makeBufferedCubes() {
                 }
             }
         }
-
     }
     bufferGeometry.computeBoundingBox();
     bufferGeometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
-    bufferGeometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+    bufferGeometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3  ) );
     var material = new THREE.PointsMaterial( { vertexColors: THREE.VertexColors } );
     scene.add( new THREE.Mesh( bufferGeometry, material ) );
-
 }
-
 
 var render = function () {
     requestAnimationFrame(render);
