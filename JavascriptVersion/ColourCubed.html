@@ -7,17 +7,26 @@
         <style>
             *{
                 overflow:hidden;
+            }
+            .control {
+                display: inline;
                 background-color: black;
                 color:whitesmoke;
             }
             #controls {
-                width: 15vw;
-                margin-top: .1%;
-                display: inline;
+                position:absolute;
+                top:0px;
                 color:whitesmoke;
+                z-index: 1;
             }
-            cube {
-                margin:auto;
+            #cubeCount {
+                width: 4em;
+            }
+            #cube {
+                position:absolute;
+                top:0px;
+                left:0px;
+                z-index: -1;
             }
             button:hover {
                 background-color: darkgray;
@@ -30,16 +39,20 @@
         <script src="js/OrbitControls.js"></script>
 	</head>
 	
-	<body>
-        Use the left mouse button and drag to rotate, scroll to zoom.<br />
-        Total Cubes:<werd id="cubeCount"></werd>    CubeSize:<werd id="cubeSize"></werd><br />
-        <button id="controls" onclick='updateCubeNum(cubeLineNum+1)'>Increase Cube Count</button>
-        <button id="controls" onclick="updateCubeNum(cubeLineNum-1)">Decrease Cube Count</button>
-        <button id="controls" onclick="updateCubeScale(cubeScale+.1)">Increase Cube Size</button>
-        <button id="controls" onclick="updateCubeScale(cubeScale-.1)">Decrease Cube Size</button>
-
-        <button id="controls" onclick="controls.autoRotate = !controls.autoRotate">[En|Dis]able autoRotate</button>
-        <cube></cube>
+	<body user-scalable="no">
+        <div id='controls'>
+            Use the left mouse button and drag to rotate, scroll to zoom. <br /> 
+            Cube Count:
+            <button class="control" onclick="document.getElementById('cubeCount').value = --cubeLineNum;updateCubeNum(document.getElementById('cubeCount').value)">[ - ]</button>
+            <input  class="control" id='cubeCount' type='text' value="16" onchange="updateCubeNum(this.value)"></input>
+            <button class="control" onclick="document.getElementById('cubeCount').value = ++cubeLineNum;updateCubeNum(document.getElementById('cubeCount').value)">[ + ]</button>
+            <br />
+            CubeSize:<werd id="cubeSize">1.0</werd>
+            <input  class="control" type="range" min="0" max="100" value="100" class="slider" oninput="document.getElementById('cubeSize').innerText = this.value/100;" ontouchend="updateCubeScale(this.value/100)" onmouseup="updateCubeScale(this.value/100)">
+            <br />
+            <button class="control" onclick="controls.autoRotate = !controls.autoRotate">[En|Dis]able autoRotate</button>
+        </div>
+        <div id='cube'></div>
         <script src="js/ColourCubed.js"></script>
         <script>
             //Sets up the scene
