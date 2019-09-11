@@ -38,7 +38,7 @@ window.onresize = function(){
  */
 function settingsUpdated() {
     cubeSize = document.getElementById('cubeSizeSlider').value/100;
-    rockyThreshold = document.getElementById('rockyThresholdSlider').value/100;
+    rockyThreshold = document.getElementById('rockyThresholdSlider').value/200;
     cubeLineNum = document.getElementById('cubeCount').value;
     if(cubeLineNum < 1) {
         cubeLineNum = 1;
