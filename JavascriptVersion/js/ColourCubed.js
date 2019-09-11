@@ -8,8 +8,9 @@ sceneContainer.appendChild(renderer.domElement);
 var scene = new THREE.Scene();
 //cubeLineNum^3 = total number of cubes
 var cubeLineNum = document.getElementById('cubeCount').value;
-var cubeSize = document.getElementById('cubeSize').innerText;
-var cubeScale = 1;
+var cubeSize = document.getElementById('cubeSizeSlider').value/100;
+var rockyThreshold = document.getElementById('rockyThresholdSlider').value/100;
+var colorModel = 0;
 
 //(Fov, AspectRatio, FrustumNearPlane, FrustumFarPlane)
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, .01, 1000);
@@ -28,28 +29,21 @@ window.onresize = function(){
     controls.update();
 };
 
-
-function updateCubeNum(newCubeLineNum) {
-    cubeLineNum = newCubeLineNum;
-    if(cubeLineNum < 1)
-        cubeLineNum = 1;
-    settingsUpdated();
-}
-
-//TODO: This is broke AF yo..
-function updateCubeScale(newCubeScale) {
-    cubeScale = newCubeScale;
-    settingsUpdated();
-}
-
 /**
  * Function is called when user updates on page settings
  *  -Number of cubes
  *  -Slice height
  *  -Auto rotate
+ *  -Rocky Scale
  */
-
 function settingsUpdated() {
+    cubeSize = document.getElementById('cubeSizeSlider').value/100;
+    rockyThreshold = document.getElementById('rockyThresholdSlider').value/100;
+    cubeLineNum = document.getElementById('cubeCount').value;
+    if(cubeLineNum < 1) {
+        cubeLineNum = 1;
+        document.getElementById('cubeCount').value = 1;
+    }
     scene = new THREE.Scene();
     makeBufferedCubes();
     document.getElementById("cubeCount").innerHTML = Math.pow(cubeLineNum,3);
@@ -63,7 +57,7 @@ function makeBufferedCubes() {
     var colors = [];
 
     var color = new THREE.Color( 0xffffff );
-    var cubeGeo = new THREE.CubeGeometry(cubeScale, cubeScale, cubeScale);
+    var cubeGeo = new THREE.CubeGeometry(cubeSize, cubeSize, cubeSize);
     var geometry = new THREE.Geometry();
 
     var x = 0;
@@ -73,37 +67,51 @@ function makeBufferedCubes() {
     //(Makes them sit around the origin more centered like)
     var cubeLinePos = cubeLineNum/(-2);
 
+    var d0;
+    var d1;
+    var d2;
+
+    var isRGB = document.getElementById('colorModeRGB').checked;
+    var isHSL = document.getElementById('colorModeHSL').checked;
+    
     for ( var i = 1; i <= totalCubes; i ++ ) {
+        if(isRGB)
+            color.setRGB( x/cubeLineNum, y/cubeLineNum, z/cubeLineNum );
+        if(isHSL)
+            color.setHSL( x/cubeLineNum, y/cubeLineNum, z/cubeLineNum );
+        d0 = Math.abs(color.r - color.g);
+        d1 = Math.abs(color.r - color.b);
+        d2 = Math.abs(color.g - color.b);
 
-        geometry.copy( cubeGeo );
-        //geometry.scale(cubeScale, cubeScale, cubeScale);
-        geometry.translate( cubeLinePos + x, cubeLinePos + y, cubeLinePos + z );
-
-        color.setRGB( x/cubeLineNum, y/cubeLineNum, z/cubeLineNum );
+        if(d0 >= rockyThreshold && d1 >= rockyThreshold && d2 >= rockyThreshold || rockyThreshold == 0.0) {
         
-        geometry.faces.forEach( function ( face ) {
+            geometry.copy( cubeGeo );
+            geometry.translate( cubeLinePos + x, cubeLinePos + y, cubeLinePos + z );
+            
+            geometry.faces.forEach( function ( face ) {
 
-            positions.push( geometry.vertices[ face.a ].x,
-                            geometry.vertices[ face.a ].y,
-                            geometry.vertices[ face.a ].z,
-                            geometry.vertices[ face.b ].x,
-                            geometry.vertices[ face.b ].y,
-                            geometry.vertices[ face.b ].z,
-                            geometry.vertices[ face.c ].x,
-                            geometry.vertices[ face.c ].y,
-                            geometry.vertices[ face.c ].z );
+                positions.push( geometry.vertices[face.a].x,
+                                geometry.vertices[face.a].y,
+                                geometry.vertices[face.a].z,
+                                geometry.vertices[face.b].x,
+                                geometry.vertices[face.b].y,
+                                geometry.vertices[face.b].z,
+                                geometry.vertices[face.c].x,
+                                geometry.vertices[face.c].y,
+                                geometry.vertices[face.c].z );
 
-            colors.push( color.r,
-                         color.g,
-                         color.b,
-                         color.r,
-                         color.g,
-                         color.b,
-                         color.r,
-                         color.g,
-                         color.b );
+                colors.push( color.r,
+                            color.g,
+                            color.b,
+                            color.r,
+                            color.g,
+                            color.b,
+                            color.r,
+                            color.g,
+                            color.b );
 
-        } );
+            } );
+        }
         x++;
         if(x == cubeLineNum) {
             x = 0;
