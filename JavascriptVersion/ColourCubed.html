@@ -43,14 +43,24 @@
         <div id='controls'>
             Use the left mouse button and drag to rotate, scroll to zoom. <br /> 
             Cube Count:
-            <button class="control" onclick="document.getElementById('cubeCount').value = --cubeLineNum;updateCubeNum(document.getElementById('cubeCount').value)">[ - ]</button>
-            <input  class="control" id='cubeCount' type='text' value="16" onchange="updateCubeNum(this.value)"></input>
-            <button class="control" onclick="document.getElementById('cubeCount').value = ++cubeLineNum;updateCubeNum(document.getElementById('cubeCount').value)">[ + ]</button>
+            <button class="control" onclick="document.getElementById('cubeCount').value = --cubeLineNum;settingsUpdated()">[ - ]</button>
+            <input  class="control" id='cubeCount' type='text' value="16" onchange="settingsUpdated()"></input>
+            <button class="control" onclick="document.getElementById('cubeCount').value = ++cubeLineNum;settingsUpdated()">[ + ]</button>
             <br />
             CubeSize:<werd id="cubeSize">1.0</werd>
-            <input  class="control" type="range" min="0" max="100" value="100" class="slider" oninput="document.getElementById('cubeSize').innerText = this.value/100;" ontouchend="updateCubeScale(this.value/100)" onmouseup="updateCubeScale(this.value/100)">
+            <input  class="control" id='cubeSizeSlider' type="range" min="0" max="100" value="100" class="slider" oninput="document.getElementById('cubeSize').innerText = this.value/100;" ontouchend="settingsUpdated()" onmouseup="settingsUpdated()">
+            <br />
+            Rocky Threshold:<werd id="rockyThreshold">0.00</werd>
+            <input  class="control" id='rockyThresholdSlider' type="range" min="0" max="100" value="0" class="slider" oninput="document.getElementById('rockyThreshold').innerText = this.value/100;" ontouchend="settingsUpdated()" onmouseup="settingsUpdated()">
             <br />
             <button class="control" onclick="controls.autoRotate = !controls.autoRotate">[En|Dis]able autoRotate</button>
+            <br />
+            Color Mode:
+            <input type="radio" id="colorModeRGB" name="colorMode" value="RGB" checked='true' oninput='settingsUpdated()'>
+            <label for="colorModeRGB">RGB</label>
+            <input type="radio" id="colorModeHSL" name="colorMode" value="HSL" oninput='settingsUpdated()'>
+            <label for="colorModeRGB">HSL</label>
+
         </div>
         <div id='cube'></div>
         <script src="js/ColourCubed.js"></script>
