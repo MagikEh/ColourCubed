@@ -44,11 +44,11 @@
             Use the left mouse button and drag to rotate, scroll to zoom. <br /> 
             Cube Count:
             <button class="control" onclick="document.getElementById('cubeCount').value = --cubeLineNum;settingsUpdated()">[ - ]</button>
-            <input  class="control" id='cubeCount' type='text' value="16" onchange="settingsUpdated()"></input>
+            <input  class="control" id='cubeCount' type='text' value="32" onchange="settingsUpdated()"></input>
             <button class="control" onclick="document.getElementById('cubeCount').value = ++cubeLineNum;settingsUpdated()">[ + ]</button>
             <br />
-            CubeSize:<werd id="cubeSize">1.0</werd>
-            <input  class="control" id='cubeSizeSlider' type="range" min="0" max="100" value="100" class="slider" oninput="document.getElementById('cubeSize').innerText = this.value/100;" ontouchend="settingsUpdated()" onmouseup="settingsUpdated()">
+            CubeSize:<werd id="cubeSize">0.5</werd>
+            <input  class="control" id='cubeSizeSlider' type="range" min="0" max="100" value="50" class="slider" oninput="document.getElementById('cubeSize').innerText = this.value/100;" ontouchend="settingsUpdated()" onmouseup="settingsUpdated()">
             <br />
             Rocky Threshold:<werd id="rockyThreshold">0.00</werd>
             <input  class="control" id='rockyThresholdSlider' type="range" min="0" max="100" value="0" class="slider" oninput="document.getElementById('rockyThreshold').innerText = this.value/100;" ontouchend="settingsUpdated()" onmouseup="settingsUpdated()">
